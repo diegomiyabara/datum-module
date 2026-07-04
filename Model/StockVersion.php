@@ -13,21 +13,21 @@ declare(strict_types=1);
 
 namespace Miyabara\FeaturedProduct\Model;
 
-use Magento\Framework\App\CacheInterface;
+use Magento\Framework\Cache\FrontendInterface;
 
 /**
- * Keeps a per-SKU change token in cache, so "did the stock change?" is answered from memory
- * instead of hitting MSI on every storefront poll.
+ * Keeps a per-SKU change token in a dedicated tag-scoped cache (virtual type in di.xml), so
+ * "did the stock change?" is answered from memory instead of hitting MSI on every storefront poll.
  */
 class StockVersion
 {
     private const CACHE_KEY_PREFIX = 'miyabara_featured_stock_version_';
 
     /**
-     * @param CacheInterface $cache
+     * @param FrontendInterface $cache
      */
     public function __construct(
-        private readonly CacheInterface $cache,
+        private readonly FrontendInterface $cache,
     ) {
     }
 

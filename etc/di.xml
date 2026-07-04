@@ -9,12 +9,27 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-
+    
     <!-- Preferences for Service Contracts -->
     <preference for="Miyabara\FeaturedProduct\Api\GetSalableQtyInterface"
                 type="Miyabara\FeaturedProduct\Model\GetSalableQty"/>
     <preference for="Miyabara\FeaturedProduct\Api\Data\StockUpdateInterface"
                 type="Miyabara\FeaturedProduct\Model\Data\StockUpdate"/>
+
+    <!-- start custom cache -->
+    <virtualType name="Miyabara\FeaturedProduct\Model\Cache\StockVersionCache"
+                 type="Magento\Framework\Cache\Frontend\Decorator\TagScope">
+        <arguments>
+            <argument name="frontend" xsi:type="object">Magento\Framework\App\Cache\Type\Collection</argument>
+            <argument name="tag" xsi:type="string">MIYABARA_FEATURED_STOCK</argument>
+        </arguments>
+    </virtualType>
+    <type name="Miyabara\FeaturedProduct\Model\StockVersion">
+        <arguments>
+            <argument name="cache" xsi:type="object">Miyabara\FeaturedProduct\Model\Cache\StockVersionCache</argument>
+        </arguments>
+    </type>
+    <!-- end custom cache -->
 
     <!-- Plugins on Inventory APIs to refresh stock versions -->
     <type name="Magento\InventoryApi\Api\SourceItemsSaveInterface">
