@@ -1,0 +1,24 @@
+<!--
+/**
+ * Miyabara_FeaturedProduct
+ *
+ * @copyright © 2026 Diego M. Miyabara. All rights reserved.
+ * @author    Diego M. Miyabara <diego.miyabara@gmail.com>
+ */
+-->
+<div class="featured-stock" data-bind="css: {'_updated': justUpdated}, event: {animationend: endPulse}">
+    <!-- ko if: qty() === null -->
+    <span class="featured-stock-badge _loading" data-bind="i18n: 'Checking availability...'"></span>
+    <!-- /ko -->
+
+    <!-- ko if: qty() !== null && qty() > 0 -->
+    <span class="featured-stock-badge _in-stock">
+        <span class="featured-stock-qty" data-bind="text: qty"></span>
+        <span data-bind="i18n: 'in stock'"></span>
+    </span>
+    <!-- /ko -->
+
+    <!-- ko if: qty() === 0 -->
+    <span class="featured-stock-badge _out-of-stock" data-bind="i18n: 'Out of stock'"></span>
+    <!-- /ko -->
+</div>
