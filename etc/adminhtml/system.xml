@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Miyabara_FeaturedProduct
+ *
+ * @copyright © 2026 Diego M. Miyabara. All rights reserved.
+ * @author    Diego M. Miyabara <diego.miyabara@gmail.com>
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="featured_product" translate="label" sortOrder="500"
+                 showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Featured Product</label>
+            <tab>catalog</tab>
+            <resource>Miyabara_FeaturedProduct::config</resource>
+            <group id="general" translate="label" sortOrder="10"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Homepage Box</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="sku" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product SKU</label>
+                    <comment>SKU of the product shown in the homepage box.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="refresh_interval" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Refresh Interval (seconds)</label>
+                    <comment>How often the storefront polls the available quantity. Between 5 and 300 seconds.</comment>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-5-300</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
