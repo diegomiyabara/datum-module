@@ -69,6 +69,10 @@ Se o SKU não existir ou o módulo estiver desabilitado, a caixa simplesmente n�
   em 5 minutos** (proteção contra invalidação perdida, ex. reindex assíncrono atualizando a qty
   depois do bump) e a qty recalculada tem **micro-cache de 60s por token** — chamadas sem versão
   não conseguem estourar o MSI.
+- **Cache HTTP condicional**: o endpoint também envia `ETag` com o mesmo token de versão. Quando
+  o cliente manda `If-None-Match` com o token atual, a resposta é `304 Not Modified`, sem corpo.
+  Por compatibilidade, chamadas que usam apenas `?version=<token>` continuam recebendo
+  `{"changed":false}`.
 - **Estilo**: `view/frontend/web/css/source/_module.less`, importado automaticamente pelo Luma
   (`@magento_import`) — sem tocar no tema.
 
@@ -88,13 +92,17 @@ curl https://sua-loja.com/rest/V1/featured-product/salable-qty
 
 curl https://sua-loja.com/rest/V1/featured-product/salable-qty?version=1783115000000
 # → {"changed":false,"version":"1783115000000","qty":0}   (respondido do cache, sem tocar no MSI)
+
+curl -i https://sua-loja.com/rest/V1/featured-product/salable-qty \
+  -H 'If-None-Match: "1783115000000"'
+# → HTTP/1.1 304 Not Modified
 ```
 
 ## Testes
 
 ```bash
-php8.1 vendor/bin/phpunit -c dev/tests/unit/phpunit.xml \
-  app/code/Miyabara/FeaturedProduct/Test/Unit/
+cd dev/tests/unit
+../../../vendor/bin/phpunit -c phpunit.xml.dist ../../../app/code/Miyabara/FeaturedProduct/Test/Unit/
 ```
 
 ## Estrutura

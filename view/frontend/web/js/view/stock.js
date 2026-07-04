@@ -76,7 +76,8 @@ define([
          * On failure the last known value is kept on screen; the next tick retries anyway.
          */
         refresh: function () {
-            var self = this;
+            var self = this,
+                headers = {};
 
             if (document.hidden || this.pending) {
                 return;
@@ -84,11 +85,20 @@ define([
 
             this.pending = true;
 
+            if (this.version) {
+                headers['If-None-Match'] = '"' + this.version.replace(/["\\]/g, '\\$&') + '"';
+            }
+
             // Endpoint returns a JSON with the current version, the qty, and a changed boolean.
-            storage.get(this.refreshUrl + '?version=' + encodeURIComponent(this.version), false)
-                .done(function (update) {
+            storage.get(this.refreshUrl + '?version=' + encodeURIComponent(this.version), false, undefined, headers)
+                .done(function (update, textStatus, jqXHR) {
                     self.failures = 0;
                     self.unavailable(false);
+
+                    if (jqXHR.status === 304) {
+                        return;
+                    }
+
                     self.version = update.version;
 
                     if (update.changed) {

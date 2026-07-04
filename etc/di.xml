@@ -45,4 +45,10 @@
         <plugin name="miyabara_refresh_stock_version"
                 type="Miyabara\FeaturedProduct\Plugin\RefreshStockVersion"/>
     </type>
+
+    <!-- Conditional GET support for the stock polling endpoint -->
+    <type name="Magento\Webapi\Controller\Rest\SynchronousRequestProcessor">
+        <plugin name="miyabara_featured_product_http_cache_stock_update"
+                type="Miyabara\FeaturedProduct\Plugin\HttpCacheStockUpdate"/>
+    </type>
 </config>
