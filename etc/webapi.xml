@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Miyabara_FeaturedProduct
+ *
+ * @copyright © 2026 Diego M. Miyabara. All rights reserved.
+ * @author    Diego M. Miyabara <diego.miyabara@gmail.com>
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/featured-product/salable-qty" method="GET">
+        <service class="Miyabara\FeaturedProduct\Api\GetSalableQtyInterface" method="execute"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+</routes>
