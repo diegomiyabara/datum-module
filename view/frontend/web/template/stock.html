@@ -6,8 +6,9 @@
  * @author    Diego M. Miyabara <diego.miyabara@gmail.com>
  */
 -->
-<div class="featured-stock" data-bind="css: {'_updated': justUpdated}, event: {animationend: endPulse}">
-    <!-- ko if: qty() === null -->
+<div class="featured-stock" aria-live="polite"
+     data-bind="css: {'_updated': justUpdated}, event: {animationend: endPulse}">
+    <!-- ko if: qty() === null && !unavailable() -->
     <span class="featured-stock-badge _loading" data-bind="i18n: 'Checking availability...'"></span>
     <!-- /ko -->
 

@@ -24,6 +24,14 @@ class StockVersion
     private const CACHE_KEY_PREFIX = 'miyabara_featured_stock_version_';
 
     /**
+     * Insurance against event-based invalidation missing a change (e.g. async reindex updating
+     * the salable qty after the bump): expired tokens force a periodic full lookup.
+     *
+     * @var int
+     */
+    private const TOKEN_LIFETIME = 300;
+
+    /**
      * @param FrontendInterface $cache
      */
     public function __construct(
@@ -46,7 +54,7 @@ class StockVersion
 
         if (!$version) {
             $version = $this->generate();
-            $this->cache->save($version, $this->cacheKey($sku));
+            $this->cache->save($version, $this->cacheKey($sku), [], self::TOKEN_LIFETIME);
         }
 
         return (string) $version;
@@ -60,7 +68,7 @@ class StockVersion
      */
     public function bump(string $sku): void
     {
-        $this->cache->save($this->generate(), $this->cacheKey($sku));
+        $this->cache->save($this->generate(), $this->cacheKey($sku), [], self::TOKEN_LIFETIME);
     }
 
     /**
@@ -77,10 +85,12 @@ class StockVersion
     /**
      * Uniqueness matters more than meaning — clients only compare tokens for equality.
      *
+     * uniqid() cannot collide across bumps the way a millisecond timestamp can.
+     *
      * @return string
      */
     private function generate(): string
     {
-        return (string) (int) (microtime(true) * 1000);
+        return uniqid('', true);
     }
 }

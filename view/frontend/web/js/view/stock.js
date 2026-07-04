@@ -8,10 +8,12 @@
  * @author    Diego M. Miyabara <diego.miyabara@gmail.com>
  */
 define([
-    'jquery',
+    'mage/storage',
     'uiComponent'
-], function ($, Component) {
+], function (storage, Component) {
     'use strict';
+
+    var MAX_FAILURES = 3;
 
     return Component.extend({
         defaults: {
@@ -28,7 +30,8 @@ define([
             this._super()
                 .observe({
                     qty: null,
-                    justUpdated: false
+                    justUpdated: false,
+                    unavailable: false
                 });
 
             return this;
@@ -40,8 +43,10 @@ define([
         initialize: function () {
             this._super();
 
-            // tvery time the page is loaded, the first poll will always return a new version, so the qty is updated immediately
+            // Every time the page is loaded, the first poll will always return a new version, so the qty is updated immediately
             this.version = '';
+            this.failures = 0;
+            this.pending = false;
 
             // Subscribe to changes in the qty observable so the template can pulse the number on screen when it changes.
             this.qty.subscribe(this.pulse, this);
@@ -51,23 +56,57 @@ define([
             // Poll the endpoint every refreshInterval seconds (minimum 5 seconds).
             setInterval(this.refresh.bind(this), Math.max(this.refreshInterval, 5) * 1000);
 
+            // Hidden tabs skip their ticks, so refresh as soon as the tab becomes visible again.
+            document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this));
+
             return this;
         },
 
         /**
+         * Refreshes immediately when the tab regains visibility.
+         */
+        onVisibilityChange: function () {
+            if (!document.hidden) {
+                this.refresh();
+            }
+        },
+
+        /**
+         * Hidden tabs and in-flight requests skip the tick: no wasted calls, no request pile-up.
          * On failure the last known value is kept on screen; the next tick retries anyway.
          */
         refresh: function () {
             var self = this;
 
-            // Endpoint returns a JSON with the current version, the qty, and a changed boolean.
-            $.getJSON(this.refreshUrl, {version: this.version}).done(function (update) {
-                self.version = update.version;
+            if (document.hidden || this.pending) {
+                return;
+            }
 
-                if (update.changed) {
-                    self.qty(Math.max(0, Math.floor(update.qty)));
-                }
-            });
+            this.pending = true;
+
+            // Endpoint returns a JSON with the current version, the qty, and a changed boolean.
+            storage.get(this.refreshUrl + '?version=' + encodeURIComponent(this.version), false)
+                .done(function (update) {
+                    self.failures = 0;
+                    self.unavailable(false);
+                    self.version = update.version;
+
+                    if (update.changed) {
+                        self.qty(Math.max(0, Math.floor(update.qty)));
+                    }
+                })
+                .fail(function () {
+                    self.failures++;
+
+                    // With nothing to show and the endpoint repeatedly failing, hide the badge
+                    // instead of spinning on the loading state forever.
+                    if (self.failures >= MAX_FAILURES && self.qty() === null) {
+                        self.unavailable(true);
+                    }
+                })
+                .always(function () {
+                    self.pending = false;
+                });
         },
 
         /**
