@@ -25,7 +25,7 @@ interface StockUpdateInterface
      *
      * @return bool
      */
-    public function getChanged(): bool;
+    public function isChanged(): bool;
 
     /**
      * Opaque token the client sends back on the next poll.

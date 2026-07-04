@@ -35,7 +35,7 @@ class StockUpdate implements StockUpdateInterface
     /**
      * @inheritdoc
      */
-    public function getChanged(): bool
+    public function isChanged(): bool
     {
         return $this->changed;
     }
