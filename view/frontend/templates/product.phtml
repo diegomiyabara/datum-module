@@ -1,0 +1,62 @@
+<?php
+/**
+ * Miyabara_FeaturedProduct
+ *
+ * @vendor    Miyabara
+ * @package   FeaturedProduct
+ *
+ * @copyright © 2026 Diego M. Miyabara. All rights reserved.
+ * @author    Diego M. Miyabara <diego.miyabara@gmail.com>
+ */
+
+declare(strict_types=1);
+
+/** @var \Miyabara\FeaturedProduct\Block\FeaturedProduct $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Miyabara\FeaturedProduct\ViewModel\FeaturedProduct $viewModel */
+$viewModel = $block->getData('view_model');
+?>
+<section class="miyabara-featured-product">
+    <a class="miyabara-featured-product-link"
+       href="<?= $escaper->escapeUrl($viewModel->getProductUrl()) ?>"
+       title="<?= $escaper->escapeHtmlAttr($viewModel->getName()) ?>">
+        <div class="miyabara-featured-product-media">
+            <?= /* @noEscape */ $viewModel->getImageHtml() ?>
+        </div>
+        <div class="miyabara-featured-product-info">
+            <span class="miyabara-featured-product-label">
+                <?= $escaper->escapeHtml(__('Featured product')) ?>
+            </span>
+            <h2 class="miyabara-featured-product-name">
+                <?= $escaper->escapeHtml($viewModel->getName()) ?>
+            </h2>
+            <span class="miyabara-featured-product-price">
+                <?= $escaper->escapeHtml($viewModel->getFormattedPrice()) ?>
+            </span>
+            <div class="miyabara-featured-product-stock" data-bind="scope: 'featured-product-stock'">
+                <!-- ko template: getTemplate() --><!-- /ko -->
+            </div>
+            <span class="miyabara-featured-product-cta">
+                <?= $escaper->escapeHtml(__('View product')) ?>
+            </span>
+        </div>
+    </a>
+</section>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "featured-product-stock": {
+                    "component": "Miyabara_FeaturedProduct/js/view/stock",
+                    "config": {
+                        "template": "Miyabara_FeaturedProduct/stock",
+                        "refreshUrl": "<?= $escaper->escapeJs($viewModel->getStockRefreshUrl()) ?>",
+                        "refreshInterval": <?= (int) $viewModel->getRefreshInterval() ?>
+                    }
+                }
+            }
+        }
+    }
+}
+</script>

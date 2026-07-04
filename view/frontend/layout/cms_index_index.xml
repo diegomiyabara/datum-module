@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Miyabara_FeaturedProduct
+ *
+ * @copyright © 2026 Diego M. Miyabara. All rights reserved.
+ * @author    Diego M. Miyabara <diego.miyabara@gmail.com>
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <!-- before="-" makes the box the first element of the main content area -->
+        <referenceContainer name="content">
+            <block class="Miyabara\FeaturedProduct\Block\FeaturedProduct"
+                   name="miyabara.featured.product"
+                   before="-"
+                   template="Miyabara_FeaturedProduct::product.phtml"/>
+        </referenceContainer>
+
+        <!-- argument injected via referenceBlock: view model with the product data;
+             the x-magento-init components map is assembled in the template -->
+        <referenceBlock name="miyabara.featured.product">
+            <arguments>
+                <argument name="view_model" xsi:type="object">Miyabara\FeaturedProduct\ViewModel\FeaturedProduct</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

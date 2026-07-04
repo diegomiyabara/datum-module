@@ -1,0 +1,203 @@
+//
+//  Miyabara_FeaturedProduct
+//
+//  @copyright © 2026 Diego M. Miyabara. All rights reserved.
+//  @author    Diego M. Miyabara <diego.miyabara@gmail.com>
+//  ---------------------------------------------
+
+//
+//  Variables
+//  ---------------------------------------------
+
+@featured-product__background: @color-white;
+@featured-product__border-color: @border-color__base;
+@featured-product__border-radius: 12px;
+@featured-product__media-background: @color-gray95;
+@featured-product__label__color: @color-gray40;
+@featured-product__stock-in__color: @color-dark-green1;
+@featured-product__stock-out__color: @error__color;
+@featured-product__cta__color: @link__color;
+
+//
+//  Common
+//  ---------------------------------------------
+
+& when (@media-common = true) {
+    .miyabara-featured-product {
+        margin-bottom: @indent__l;
+        width: 100%;
+
+        .miyabara-featured-product-link {
+            background: @featured-product__background;
+            border: 1px solid @featured-product__border-color;
+            border-radius: @featured-product__border-radius;
+            box-shadow: 0 1px 4px fade(@color-black, 6%);
+            color: @text__color;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            text-decoration: none;
+            transition: box-shadow .25s ease, transform .25s ease;
+
+            &:hover {
+                box-shadow: 0 10px 28px fade(@color-black, 14%);
+                text-decoration: none;
+                transform: translateY(-2px);
+
+                .miyabara-featured-product-media img {
+                    transform: scale(1.04);
+                }
+
+                .miyabara-featured-product-cta {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        .miyabara-featured-product-media {
+            align-items: center;
+            background: @featured-product__media-background;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            padding: @indent__base;
+
+            img {
+                height: auto;
+                max-height: 240px;
+                max-width: 100%;
+                mix-blend-mode: multiply;
+                transition: transform .3s ease;
+                width: auto;
+            }
+        }
+
+        .miyabara-featured-product-info {
+            display: flex;
+            flex-direction: column;
+            gap: @indent__s;
+            justify-content: center;
+            padding: @indent__base;
+        }
+
+        .miyabara-featured-product-label {
+            color: @featured-product__label__color;
+            font-size: @font-size__s;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .miyabara-featured-product-name {
+            font-weight: @font-weight__light;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .miyabara-featured-product-price {
+            font-size: @font-size__xl;
+            font-weight: @font-weight__semibold;
+        }
+
+        .miyabara-featured-product-cta {
+            color: @featured-product__cta__color;
+            font-size: @font-size__s;
+            font-weight: @font-weight__semibold;
+
+            &:after {
+                content: ' \2192';
+            }
+        }
+
+        .featured-stock {
+            &._updated {
+                animation: miyabara-stock-pulse .8s ease;
+            }
+        }
+
+        @keyframes miyabara-stock-pulse {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            35% {
+                opacity: .35;
+                transform: scale(1.06);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .featured-stock-badge {
+            align-items: center;
+            border-radius: 999px;
+            display: inline-flex;
+            font-size: @font-size__s;
+            gap: 6px;
+            padding: 4px 12px;
+
+            &:before {
+                background: currentColor;
+                border-radius: 50%;
+                content: '';
+                display: inline-block;
+                height: 7px;
+                width: 7px;
+            }
+
+            &._in-stock {
+                background: fade(@featured-product__stock-in__color, 10%);
+                color: @featured-product__stock-in__color;
+            }
+
+            &._out-of-stock {
+                background: fade(@featured-product__stock-out__color, 10%);
+                color: @featured-product__stock-out__color;
+            }
+
+            &._loading {
+                background: @featured-product__media-background;
+                color: @featured-product__label__color;
+            }
+        }
+
+        .featured-stock-qty {
+            font-weight: @font-weight__bold;
+        }
+    }
+}
+
+//
+//  Desktop
+//  ---------------------------------------------
+
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+    .miyabara-featured-product {
+        .miyabara-featured-product-link {
+            align-items: stretch;
+            flex-direction: row;
+        }
+
+        .miyabara-featured-product-media {
+            flex: 0 0 320px;
+            padding: @indent__l;
+
+            img {
+                max-height: 280px;
+            }
+        }
+
+        .miyabara-featured-product-info {
+            align-items: flex-start;
+            flex: 1;
+            padding: @indent__l @indent__xl;
+        }
+
+        .miyabara-featured-product-name {
+            font-size: 2.4rem;
+        }
+    }
+}
