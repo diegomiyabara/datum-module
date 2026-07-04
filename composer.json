@@ -1,0 +1,25 @@
+{
+    "name": "miyabara/module-featured-product",
+    "description": "Featured product box on the Luma homepage with near real-time salable quantity",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "require": {
+        "php": "~8.1.0||~8.2.0",
+        "magento/framework": "~103.0",
+        "magento/module-catalog": "*",
+        "magento/module-config": "*",
+        "magento/module-inventory-api": "*",
+        "magento/module-inventory-reservations-api": "*",
+        "magento/module-inventory-sales-api": "*",
+        "magento/module-store": "*"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Miyabara\\FeaturedProduct\\": ""
+        }
+    }
+}
