@@ -12,6 +12,8 @@
     <module name="Miyabara_FeaturedProduct">
         <sequence>
             <module name="Magento_Catalog"/>
+            <module name="Magento_InventoryApi"/>
+            <module name="Magento_InventoryReservationsApi"/>
             <module name="Magento_InventorySalesApi"/>
         </sequence>
     </module>

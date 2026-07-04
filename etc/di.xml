@@ -13,4 +13,16 @@
     <!-- Preferences for Service Contracts -->
     <preference for="Miyabara\FeaturedProduct\Api\GetSalableQtyInterface"
                 type="Miyabara\FeaturedProduct\Model\GetSalableQty"/>
+    <preference for="Miyabara\FeaturedProduct\Api\Data\StockUpdateInterface"
+                type="Miyabara\FeaturedProduct\Model\Data\StockUpdate"/>
+
+    <!-- Plugins on Inventory APIs to refresh stock versions -->
+    <type name="Magento\InventoryApi\Api\SourceItemsSaveInterface">
+        <plugin name="miyabara_featuredproduct_bump_stock_version_on_source_items_save"
+                type="Miyabara\FeaturedProduct\Plugin\BumpStockVersionOnSourceItemsSave"/>
+    </type>
+    <type name="Magento\InventoryReservationsApi\Model\AppendReservationsInterface">
+        <plugin name="miyabara_featuredproduct_bump_stock_version_on_append_reservations"
+                type="Miyabara\FeaturedProduct\Plugin\BumpStockVersionOnAppendReservations"/>
+    </type>
 </config>

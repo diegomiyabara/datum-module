@@ -15,6 +15,7 @@ namespace Miyabara\FeaturedProduct\Api;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Miyabara\FeaturedProduct\Api\Data\StockUpdateInterface;
 
 /**
  * Exposes the featured product salable quantity so the storefront can poll it without reloading the page.
@@ -26,9 +27,12 @@ interface GetSalableQtyInterface
     /**
      * Reads the configured SKU server-side, so the endpoint never becomes an arbitrary stock lookup.
      *
-     * @return float
+     * When the client version is still current, MSI is not queried at all — the answer comes from cache.
+     *
+     * @param string|null $version Token from the previous response; null forces a full lookup
+     * @return StockUpdateInterface
      * @throws NoSuchEntityException
      * @throws LocalizedException
      */
-    public function execute(): float;
+    public function execute(?string $version = null): StockUpdateInterface;
 }

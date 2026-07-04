@@ -40,6 +40,9 @@ define([
         initialize: function () {
             this._super();
 
+            // token from the last response; sent back so unchanged polls are answered from cache
+            this.version = '';
+
             // KO only notifies subscribers when the primitive value actually changes,
             // so repeated polls returning the same qty never trigger the pulse
             this.qty.subscribe(this.pulse, this);
@@ -56,8 +59,12 @@ define([
         refresh: function () {
             var self = this;
 
-            $.getJSON(this.refreshUrl).done(function (qty) {
-                self.qty(Math.max(0, Math.floor(qty)));
+            $.getJSON(this.refreshUrl, {version: this.version}).done(function (update) {
+                self.version = update.version;
+
+                if (update.changed) {
+                    self.qty(Math.max(0, Math.floor(update.qty)));
+                }
             });
         },
 
