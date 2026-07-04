@@ -16,7 +16,7 @@ define([
     return Component.extend({
         defaults: {
             refreshUrl: '',
-            refreshInterval: 15
+            refreshInterval: 15 //default value  in case the config is not set
         },
 
         /**
@@ -40,14 +40,15 @@ define([
         initialize: function () {
             this._super();
 
-            // token from the last response; sent back so unchanged polls are answered from cache
+            // tvery time the page is loaded, the first poll will always return a new version, so the qty is updated immediately
             this.version = '';
 
-            // KO only notifies subscribers when the primitive value actually changes,
-            // so repeated polls returning the same qty never trigger the pulse
+            // Subscribe to changes in the qty observable so the template can pulse the number on screen when it changes.
             this.qty.subscribe(this.pulse, this);
 
             this.refresh();
+
+            // Poll the endpoint every refreshInterval seconds (minimum 5 seconds).
             setInterval(this.refresh.bind(this), Math.max(this.refreshInterval, 5) * 1000);
 
             return this;
@@ -59,6 +60,7 @@ define([
         refresh: function () {
             var self = this;
 
+            // Endpoint returns a JSON with the current version, the qty, and a changed boolean.
             $.getJSON(this.refreshUrl, {version: this.version}).done(function (update) {
                 self.version = update.version;
 
@@ -76,8 +78,7 @@ define([
         },
 
         /**
-         * Bound to animationend in the template — the CSS animation owns the duration,
-         * so no JS timer is needed to end the pulse.
+         * Resets the justUpdated observable so the CSS pulse animation can play again on the next change.
          */
         endPulse: function () {
             this.justUpdated(false);

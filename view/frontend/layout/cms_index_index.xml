@@ -18,8 +18,7 @@
                    template="Miyabara_FeaturedProduct::product.phtml"/>
         </referenceContainer>
 
-        <!-- argument injected via referenceBlock: view model with the product data;
-             the x-magento-init components map is assembled in the template -->
+        <!-- injects ViewModel into the block -->
         <referenceBlock name="miyabara.featured.product">
             <arguments>
                 <argument name="view_model" xsi:type="object">Miyabara\FeaturedProduct\ViewModel\FeaturedProduct</argument>
