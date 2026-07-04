@@ -16,7 +16,7 @@ Nenhum arquivo de tema é alterado: tudo vive dentro do módulo.
 ## Instalação
 
 ```bash
-# o módulo já está em app/code/Miyabara/FeaturedProduct
+clone o repositorio dentro de app/code
 php8.1 bin/magento module:enable Miyabara_FeaturedProduct
 php8.1 bin/magento setup:upgrade
 php8.1 bin/magento cache:flush
