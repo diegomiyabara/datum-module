@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Miyabara\FeaturedProduct\Block;
 
+use Magento\Framework\DataObject\IdentityInterface;
 use Magento\Framework\View\Element\Template;
 use Miyabara\FeaturedProduct\ViewModel\FeaturedProduct as FeaturedProductViewModel;
 
@@ -20,8 +21,21 @@ use Miyabara\FeaturedProduct\ViewModel\FeaturedProduct as FeaturedProductViewMod
  * Renders the featured box only when there is something valid to show; all product data and
  * JS component parameters come from the view model and are wired in the template.
  */
-class FeaturedProduct extends Template
+class FeaturedProduct extends Template implements IdentityInterface
 {
+    /**
+     * Ties the cached homepage to the product cache tags, so saving the featured product
+     * (price, name, image) purges full page cache without manual flushes.
+     *
+     * @return string[]
+     */
+    public function getIdentities()
+    {
+        $viewModel = $this->getViewModel();
+
+        return $viewModel !== null ? $viewModel->getProductIdentities() : [];
+    }
+
     /**
      * Renders nothing when the module is disabled or the SKU cannot be resolved.
      *

@@ -33,7 +33,7 @@ class FeaturedProduct implements ArgumentInterface
 {
     private const IMAGE_ID = 'miyabara_featured_product';
 
-    private const QTY_ENDPOINT = 'rest/V1/featured-product/salable-qty';
+    private const QTY_ENDPOINT = 'rest/%s/V1/featured-product/salable-qty';
 
     /** @var Product|null */
     private ?Product $product = null;
@@ -141,13 +141,30 @@ class FeaturedProduct implements ArgumentInterface
     }
 
     /**
-     * Built server-side so the JS component receives a ready endpoint for the current store base URL.
+     * Includes the store code in the REST path.
+     *
+     * This way the call resolves config and stock in the caller's store scope
+     * instead of falling back to the default store view.
      *
      * @return string
      */
     public function getStockRefreshUrl(): string
     {
-        return $this->urlBuilder->getDirectUrl(self::QTY_ENDPOINT);
+        $storeCode = (string) $this->storeManager->getStore()->getCode();
+
+        return $this->urlBuilder->getDirectUrl(sprintf(self::QTY_ENDPOINT, $storeCode));
+    }
+
+    /**
+     * Lets the block expose the product cache tags, so saving the product purges cached pages.
+     *
+     * @return string[]
+     */
+    public function getProductIdentities(): array
+    {
+        $product = $this->getProduct();
+
+        return $product !== null ? $product->getIdentities() : [];
     }
 
     /**
