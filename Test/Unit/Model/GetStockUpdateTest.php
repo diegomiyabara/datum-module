@@ -31,7 +31,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Covers the guard clauses, the version short-circuit, the qty micro-cache and the MSI delegation.
+ * Covers the guard clauses, the qty micro-cache and the MSI delegation of the stock service.
  */
 class GetStockUpdateTest extends TestCase
 {
@@ -73,7 +73,7 @@ class GetStockUpdateTest extends TestCase
 
         $stockUpdateFactory = $this->createMock(StockUpdateInterfaceFactory::class);
         $stockUpdateFactory->method('create')->willReturnCallback(
-            static fn (array $data) => new StockUpdate($data['changed'], $data['version'], $data['qty']),
+            static fn (array $data) => new StockUpdate($data['version'], $data['qty']),
         );
 
         $this->subject = new GetStockUpdate(
@@ -87,7 +87,7 @@ class GetStockUpdateTest extends TestCase
         );
     }
 
-    public function testShouldReturnQtyWhenClientVersionIsStale(): void
+    public function testShouldReturnVersionAndQtyFromMsi(): void
     {
         $this->config->method('isEnabled')->willReturn(true);
         $this->config->method('getSku')->willReturn('24-MB01');
@@ -109,26 +109,10 @@ class GetStockUpdateTest extends TestCase
             ->with('24-MB01', 1)
             ->willReturn(42.0);
 
-        $result = $this->subject->execute('v1');
+        $result = $this->subject->execute();
 
-        $this->assertTrue($result->isChanged());
         $this->assertSame('v2', $result->getVersion());
         $this->assertSame(42.0, $result->getQty());
-    }
-
-    public function testShouldSkipMsiLookupWhenClientVersionIsCurrent(): void
-    {
-        $this->config->method('isEnabled')->willReturn(true);
-        $this->config->method('getSku')->willReturn('24-MB01');
-        $this->stockVersion->method('get')->willReturn('v1');
-
-        $this->stockResolver->expects($this->never())->method('execute');
-        $this->getProductSalableQty->expects($this->never())->method('execute');
-
-        $result = $this->subject->execute('v1');
-
-        $this->assertFalse($result->isChanged());
-        $this->assertSame('v1', $result->getVersion());
     }
 
     public function testShouldServeQtyFromMicroCacheWithoutMsiLookup(): void
@@ -141,9 +125,8 @@ class GetStockUpdateTest extends TestCase
         $this->stockResolver->expects($this->never())->method('execute');
         $this->getProductSalableQty->expects($this->never())->method('execute');
 
-        $result = $this->subject->execute('v1');
+        $result = $this->subject->execute();
 
-        $this->assertTrue($result->isChanged());
         $this->assertSame(33.0, $result->getQty());
     }
 

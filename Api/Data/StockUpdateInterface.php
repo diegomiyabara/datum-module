@@ -14,28 +14,21 @@ declare(strict_types=1);
 namespace Miyabara\FeaturedProduct\Api\Data;
 
 /**
- * Response of the stock endpoint: carries the qty only when it changed, so unchanged polls stay cheap.
+ * Response of the stock endpoint; "unchanged" is signaled at HTTP level (304), not in the body.
  *
  * @api
  */
 interface StockUpdateInterface
 {
     /**
-     * False means the client version is current and qty was not recalculated.
-     *
-     * @return bool
-     */
-    public function isChanged(): bool;
-
-    /**
-     * Opaque token the client sends back on the next poll.
+     * Opaque change token — the same value travels as the ETag response header.
      *
      * @return string
      */
     public function getVersion(): string;
 
     /**
-     * Salable quantity; only meaningful when changed is true.
+     * Salable quantity for the configured featured product.
      *
      * @return float
      */

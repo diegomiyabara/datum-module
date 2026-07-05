@@ -24,9 +24,9 @@ use Miyabara\FeaturedProduct\Api\Data\StockUpdateInterfaceFactory;
 use Miyabara\FeaturedProduct\Api\GetStockUpdateInterface;
 
 /**
- * Resolves the quantity through MSI so reservations and multi-source stocks are respected —
- * current tokens are answered from cache alone, and the qty itself is micro-cached per token
- * so version-less calls cannot stampede MSI.
+ * Resolves the quantity through MSI so reservations and multi-source stocks are respected;
+ * the qty is micro-cached per change token so polling clients cannot stampede MSI —
+ * unchanged clients never even reach this class (304 short-circuit in the webapi plugin).
  */
 class GetStockUpdate implements GetStockUpdateInterface
 {
@@ -63,7 +63,7 @@ class GetStockUpdate implements GetStockUpdateInterface
     /**
      * @inheritdoc
      */
-    public function execute(?string $version = null): StockUpdateInterface
+    public function execute(): StockUpdateInterface
     {
         $storeId = (int) $this->storeManager->getStore()->getId();
         $sku = $this->config->getSku($storeId);
@@ -72,20 +72,11 @@ class GetStockUpdate implements GetStockUpdateInterface
             throw new NoSuchEntityException(__('No featured product is configured.'));
         }
 
-        $currentVersion = $this->stockVersion->get($sku);
-
-        if ($version === $currentVersion) {
-            return $this->stockUpdateFactory->create([
-                'changed' => false,
-                'version' => $currentVersion,
-                'qty' => 0.0,
-            ]);
-        }
+        $version = $this->stockVersion->get($sku);
 
         return $this->stockUpdateFactory->create([
-            'changed' => true,
-            'version' => $currentVersion,
-            'qty' => $this->getQty($sku, $currentVersion),
+            'version' => $version,
+            'qty' => $this->getQty($sku, $version),
         ]);
     }
 

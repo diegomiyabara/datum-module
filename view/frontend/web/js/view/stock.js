@@ -43,8 +43,8 @@ define([
         initialize: function () {
             this._super();
 
-            // Every time the page is loaded, the first poll will always return a new version, so the qty is updated immediately
-            this.version = '';
+            // Every time the page is loaded, the first poll has no ETag yet, so the qty is fetched immediately
+            this.etag = '';
             this.failures = 0;
             this.pending = false;
 
@@ -85,12 +85,13 @@ define([
 
             this.pending = true;
 
-            if (this.version) {
-                headers['If-None-Match'] = '"' + this.version.replace(/["\\]/g, '\\$&') + '"';
+            // The ETag from the last response is sent back verbatim; a 304 means "nothing changed"
+            // and carries no body — the single validator of the whole flow.
+            if (this.etag) {
+                headers['If-None-Match'] = this.etag;
             }
 
-            // Endpoint returns a JSON with the current version, the qty, and a changed boolean.
-            storage.get(this.refreshUrl + '?version=' + encodeURIComponent(this.version), false, undefined, headers)
+            storage.get(this.refreshUrl, false, undefined, headers)
                 .done(function (update, textStatus, jqXHR) {
                     self.failures = 0;
                     self.unavailable(false);
@@ -99,11 +100,8 @@ define([
                         return;
                     }
 
-                    self.version = update.version;
-
-                    if (update.changed) {
-                        self.qty(Math.max(0, Math.floor(update.qty)));
-                    }
+                    self.etag = jqXHR.getResponseHeader('ETag') || '';
+                    self.qty(Math.max(0, Math.floor(update.qty)));
                 })
                 .fail(function () {
                     self.failures++;

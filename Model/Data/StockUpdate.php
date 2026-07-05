@@ -21,23 +21,13 @@ use Miyabara\FeaturedProduct\Api\Data\StockUpdateInterface;
 class StockUpdate implements StockUpdateInterface
 {
     /**
-     * @param bool $changed
      * @param string $version
      * @param float $qty
      */
     public function __construct(
-        private readonly bool $changed,
         private readonly string $version,
         private readonly float $qty,
     ) {
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function isChanged(): bool
-    {
-        return $this->changed;
     }
 
     /**

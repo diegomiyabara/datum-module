@@ -22,6 +22,7 @@ use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Miyabara\FeaturedProduct\Api\GetStockUpdateInterface;
 use Miyabara\FeaturedProduct\Model\Config;
 use Psr\Log\LoggerInterface;
 
@@ -33,7 +34,6 @@ class FeaturedProduct implements ArgumentInterface
 {
     private const IMAGE_ID = 'miyabara_featured_product';
 
-    private const QTY_ENDPOINT = 'rest/%s/V1/featured-product/salable-qty';
 
     /** @var Product|null */
     private ?Product $product = null;
@@ -152,7 +152,7 @@ class FeaturedProduct implements ArgumentInterface
     {
         $storeCode = (string) $this->storeManager->getStore()->getCode();
 
-        return $this->urlBuilder->getDirectUrl(sprintf(self::QTY_ENDPOINT, $storeCode));
+        return $this->urlBuilder->getDirectUrl('rest/' . $storeCode . GetStockUpdateInterface::ROUTE);
     }
 
     /**

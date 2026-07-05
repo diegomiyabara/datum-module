@@ -18,21 +18,25 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Miyabara\FeaturedProduct\Api\Data\StockUpdateInterface;
 
 /**
- * Answers "did the featured product stock change, and if so what is the qty?" for storefront polling.
+ * Returns the featured product salable qty; "did it change?" is answered at HTTP level
+ * via ETag / If-None-Match (304), keeping a single validator for the whole flow.
  *
  * @api
  */
 interface GetStockUpdateInterface
 {
     /**
+     * Single source of the endpoint path — webapi.xml, the storefront URL and the
+     * conditional GET plugin must always agree on it.
+     */
+    public const ROUTE = '/V1/featured-product/salable-qty';
+
+    /**
      * Reads the configured SKU server-side, so the endpoint never becomes an arbitrary stock lookup.
      *
-     * When the client version is still current, MSI is not queried at all — the answer comes from cache.
-     *
-     * @param string|null $version Token from the previous response; null forces a full lookup
      * @return StockUpdateInterface
      * @throws NoSuchEntityException
      * @throws LocalizedException
      */
-    public function execute(?string $version = null): StockUpdateInterface;
+    public function execute(): StockUpdateInterface;
 }
